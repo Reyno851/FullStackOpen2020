@@ -1,0 +1,58 @@
+# Submission of form is controlled by html form tag's action (POST)
+# and method (/new_note) attributes
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+
+# Code on server responsible for POST request is as follows:
+# app.post('/new_note', (req, res) => {
+# notes.push({
+#    content: req.body.note,
+#    date: new Date(),
+#  })
+#
+#  return res.redirect('/notes')
+# })
+
+# Summary:
+# Data is sent as the body of the post request object (req.body).
+# Server creates new note object and pushes it to an
+# array called notes (notes.push(...)). The new note object has 2 fields
+# content and date. 
+# New notes are not saved into database, so new notes disappear when 
+# web service is restarted.
+
+note over server
+server processes 
+POST request
+end note
+
+server-->browser: HTTP status code 302 (URL redirect)
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+server-->browser: HTML code
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+server-->browser: main.js
+
+note over browser:
+browser starts executing js-code
+that requests JSON data from server 
+end note
+
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+
+note over server:
+server returns notes
+as json data
+end note
+
+server-->browser: [{ content: "HTML is easy", date: "2019-05-23" }, ... ]
+
+note over browser:
+browser executes the event handler
+that renders notes to display using
+DOM API
+end note
+
+# Entire page is refreshed, with addition of new note
+# Entire page refreshing is a sign that the application has multiple pages
+# and is not a Single Page Application
