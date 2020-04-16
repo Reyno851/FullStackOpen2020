@@ -1,3 +1,4 @@
+title FSO2020 part 0.4 (Traditional new note creation)
 # Submission of form is controlled by html form tag's action (POST)
 # and method (/new_note) attributes
 browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note

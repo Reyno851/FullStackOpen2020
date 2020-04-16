@@ -1,0 +1,28 @@
+title FSO2020 part 0.5 (Single Page Application)
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/spa
+server-->browser: HTML code
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/spa.js
+server-->browser: spa.js
+
+note over browser:
+browser starts executing js-code
+that requests JSON data from server 
+end note
+
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+
+note over server:
+server returns notes
+as json data
+end note
+
+server-->browser: [{ content: "HTML is easy", date: "2019-05-23" }, ... ]
+
+note over browser:
+browser executes the event handler
+that renders notes to display using
+DOM API
+end note

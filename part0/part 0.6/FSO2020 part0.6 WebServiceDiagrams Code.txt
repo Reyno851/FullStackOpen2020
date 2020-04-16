@@ -1,0 +1,39 @@
+title FSO2020 part 0.6 (New note in Single Page Application)
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+# Form has no action or method attributes
+# Data is sent from browser to server as JSON-data
+
+server-->browser: Status code 201 
+
+note left of browser
+browser processes data using JavaScript
+end note
+note over browser
+document.getElementByID() is used to obtain form DOM element
+end note
+note over browser
+event handler is registered to handle form submission
+end note
+note over browser
+.preventDefault() is called to prevent default form submission
+end note
+note over browser
+event handler creates new note and adds it to notes list
+end note
+note over browser
+notes list is re-rendered on page
+end note
+
+browser->server: New note sent
+# Code which sends note to server:
+# var sendToServer = function(note) {
+#  var xhttpForPost = new XMLHttpRequest()
+#  // ...
+
+#  xhttpForPost.open('POST', '/new_note_spa', true)
+#  xhttpForPost.setRequestHeader(
+#    'Content-type', 'application/json'
+#  )
+#  xhttpForPost.send(JSON.stringify(note))
+#}
