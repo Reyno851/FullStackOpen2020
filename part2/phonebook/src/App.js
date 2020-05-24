@@ -28,66 +28,94 @@ const App = () => {
       alert("Fields cannot be empty"); // Prevent user from submitting if any one field is empty
     } else {
       // Use some function to search if person's name exists and new input number is different from the records
-      if (persons.some(person => person.name === newName && person.number !== newNumber)) {
+      if (
+        persons.some(
+          (person) => person.name === newName && person.number !== newNumber
+        )
+      ) {
         if (
-          window.confirm( // Prompt user to confirm replacement
+          window.confirm(
+            // Prompt user to confirm replacement
             `${newName} is already added to phonebook, replace old number with a new one?`
           )
-        ) { // If user confirms...
-          const duplicatePerson = persons.find( // Find the specific duplicated person's object
-            person => person.name === newName
+        ) {
+          // If user confirms...
+          const duplicatePerson = persons.find(
+            // Find the specific duplicated person's object
+            (person) => person.name === newName
           );
-          const duplicatePersonID = persons.find( // Get the ID of the person
-            person => person.name === newName
+          const duplicatePersonID = persons.find(
+            // Get the ID of the person
+            (person) => person.name === newName
           ).id;
           // Create copy of the object of the person to be changed, but update the number
-          const changedPerson = { ...duplicatePerson, number: newNumber }; 
+          const changedPerson = { ...duplicatePerson, number: newNumber };
 
           personService
             .updateNumber(duplicatePersonID, changedPerson) // Call updateNumber from personService, which returns a promise
-            .then(changedPerson => { // Upon successfully resolving promise
-              setPersons( // Use map to look through persons and replace person object with the new person object with updated number
-                persons.map(person =>
-                  person.name === newName ? changedPerson : person 
+            .then((changedPerson) => {
+              // Upon successfully resolving promise
+              setPersons(
+                // Use map to look through persons and replace person object with the new person object with updated number
+                persons.map((person) =>
+                  person.name === newName ? changedPerson : person
                 )
               );
-              setErrorState(false) // Set error state to false as promise was successfully resolved
+              setErrorState(false); // Set error state to false as promise was successfully resolved
               // This will affect css of message in the Message component
               setMessage(`${newName}'s number has been updated`); // Set appropriate message
-              setTimeout(() => { // Set timeout of message for 5 seconds
+              setTimeout(() => {
+                // Set timeout of message for 5 seconds
                 setMessage(null);
               }, 5000);
             })
-            .catch(error => { // else if there is an error 
-              console.log(error) // console log the error
-              setErrorState(true) // Set error state to true
-              setMessage(`Information of ${newName} has already been removed from the server.`) // Set appropriate message
-              setTimeout(()=>{ // Set timeout for message
-                setMessage(null)
-              }, 5000)
+            .catch((error) => { // If there is validation error during PUT request
+              console.log(error.response.data); // console log the error
+              setErrorState(true); // Set error state to true
+              setMessage(JSON.stringify(error.response.data)); // Set mongoose default error message on screen
+              setTimeout(() => {
+                // Set timeout for message
+                setMessage(null);
+              }, 5000);
             });
         }
         // Use some function again to check whether there is a record with the exact same name and number as newName and newNumber
-      } else if (persons.some(person => person.name === newName && person.number === newNumber)) {
+      } else if (
+        persons.some(
+          (person) => person.name === newName && person.number === newNumber
+        )
+      ) {
         // Show an alert in this case
-        alert(`${newName} has already been added with the number ${newNumber}`)
-      } else { // Else, if person if completely new 
-        const nameObject = { // Create new object for the person
+        alert(`${newName} has already been added with the number ${newNumber}`);
+      } else {
+        // Else, if person if completely new
+        const nameObject = {
+          // Create new object for the person
           name: newName,
           number: newNumber,
           id: persons.length + 1,
         };
         personService
           .create(nameObject) // Call personService.create()
-          .then(nameObject => {
+          .then((nameObject) => {
             setPersons(persons.concat(nameObject)); // Set new persons data
             setNewName(""); // Set input field values to blank
             setNewNumber("");
+            setErrorState(false);
             setMessage(`Added ${newName}`); // Set appropriate message
-            setTimeout(() => { // Set timeout for message
+            setTimeout(() => {
+              // Set timeout for message
               setMessage(null);
             }, 5000);
-        });
+          })
+          .catch((error) => { // If there is validation error when creating new person via POST request
+            console.log(error.response.data); // console.log error message
+            setErrorState(true); // Set error state to true to toggle CSS
+            setMessage(JSON.stringify(error.response.data)); // Set mongoose default error message on screen
+            setTimeout(() => { // Set timeout for message
+              setMessage(null); 
+            }, 5000);
+          });
       }
     }
   };
@@ -103,7 +131,7 @@ const App = () => {
     console.log(event.target.value);
     setNewNumber(event.target.value);
   };
-  
+
   var handleInputNameChange = (event) => {
     setInputName(event.target.value);
     if (event.target.value === "") {
@@ -124,7 +152,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Message message={message} errorState={errorState}/>
+      <Message message={message} errorState={errorState} />
       <Filter
         inputName={inputName}
         handleInputNameChange={handleInputNameChange}

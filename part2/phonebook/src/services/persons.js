@@ -1,5 +1,6 @@
 import axios from "axios";
-const baseUrl = "http://localhost:3001/persons";
+// const baseUrl = "https://still-temple-41173.herokuapp.com/api/persons";
+const baseUrl = "/api/persons"; // Both front and back end are at the same address, so use relative path
 
 const getAll = () => {
   const request = axios.get(baseUrl);
