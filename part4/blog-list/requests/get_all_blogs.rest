@@ -1,0 +1,46 @@
+#GET http://localhost:3001/api/users
+
+# POST http://localhost:3001/api/blogs
+# Content-Type: application/json
+# Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjVlZTdiMDFkMDViZWFkNDYyNGRmZmY0NCIsImlhdCI6MTU5MjMyNTk5NX0.kXZNo93tmPd9Zo7DP6sw-KLzxbqd7Cdtyi3Ww2ho2t4
+
+# {   
+#     "title": "Blog Post for Deletion",
+#     "author": "Reynold",
+#     "url": "website.com",
+#     "likes": 1344232,
+#     "userId": "5ee7b01d05bead4624dfff44"
+# }
+
+# POST http://localhost:3001/api/users
+# Content-Type: application/json
+
+# {   
+#     "username": "test",
+#     "name": "Reynold",
+#     "password": "svanhagen"
+# }
+
+
+# PUT http://localhost:3001/api/blogs/5edc88069ddea21e00c92487
+# Content-Type: application/json
+
+# {   
+#     "title": "Second Blog Post",
+#     "author": "ReyDK",
+#     "url": "website.com",
+#     "likes": 32111
+# }
+
+
+
+DELETE http://localhost:3001/api/blogs/5ee8f9f7ba69672238a71dec
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjVlZTdiMDFkMDViZWFkNDYyNGRmZmY0NCIsImlhdCI6MTU5MjMyNTk5NX0.kXZNo93tmPd9Zo7DP6sw-KLzxbqd7Cdtyi3Ww2ho2t4
+
+# POST http://localhost:3001/api/login
+# Content-Type: application/json
+
+# {
+#     "username": "test",
+#     "password": "svanhagen"
+# }

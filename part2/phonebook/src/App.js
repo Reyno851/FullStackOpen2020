@@ -147,7 +147,7 @@ const App = () => {
     ? persons // If showAll is true, show all persons
     : persons.filter((person) =>
         person.name.toLowerCase().includes(inputName.toLowerCase())
-      ); // else, filter only searched results
+      ); // Else, filter only searched results
 
   return (
     <div>
