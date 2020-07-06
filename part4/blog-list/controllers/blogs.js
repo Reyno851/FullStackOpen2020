@@ -46,7 +46,7 @@ blogsRouter.post('/', async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user._id
+    user: user // ._id was removed
   })
 
   const savedBlog = await blog.save()
@@ -64,28 +64,36 @@ blogsRouter.delete('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id) // Find blog that matches id of blog we want to delete
   console.log('Blog to be deleted: ', blog)
 
-  if (decodedToken.id.toString() === blog.user.toString()){ // Check if id contained within decoded token matches blog creator's id
-    console.log('Id contained within request token matches id of user who created blog to be deleted')
-    await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
-  } else {
-    response.status(401).json({ error: 'token missing or invalid' })
-  }
+  await Blog.findByIdAndRemove(request.params.id) // <== Use to force delete if needed
+  response.status(204).end()                      // <==
+
+  // if (decodedToken.id.toString() === blog.user.toString()){ // Check if id contained within decoded token matches blog creator's id
+  //   console.log('Id contained within request token matches id of user who created blog to be deleted')
+  //   await Blog.findByIdAndRemove(request.params.id)
+  //   response.status(204).end()
+  // } else {
+  //   response.status(401).json({ error: 'token missing or invalid' })
+  // }
 
 })
 
 blogsRouter.put('/:id', (request, response, next) => {
   const body = request.body
-
+  // console.log('THIS BODY: ', body)
   const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes
+    likes: body.likes,
+    user: body.user.id
   }
 
+  console.log('ASDFJKASDF: ', blog)
+  // const findedblog = await Blog.findById(request.params.id)
+  // console.log('found : ', findedblog)
   Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
     .then((updatedBlog) => {
+      console.log('updated: ', updatedBlog)
       response.json(updatedBlog.toJSON())
     })
     .catch((error) => next(error))
