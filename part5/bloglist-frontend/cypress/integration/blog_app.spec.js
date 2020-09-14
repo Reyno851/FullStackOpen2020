@@ -116,43 +116,43 @@ describe('Blog app', function() {
 
     })
 
-    // describe.only('if there are multiple blogs created', function () {
-    //   beforeEach(function(){
-    //     cy.login({ username: 'test', password: 'svanhagen'})
-    //     cy.createBlog({
-    //       title: 'some likes',
-    //       author: 'J',
-    //       url: 'anothercypress.com',
-    //       likes: '50',
+    describe.only('if there are multiple blogs created', function () {
+      beforeEach(function(){
+        cy.login({ username: 'test', password: 'svanhagen'})
+        cy.createBlog({
+          title: 'some likes',
+          author: 'J',
+          url: 'anothercypress.com',
+          likes: '50',
 
-    //     })
+        })
 
-    //     cy.createBlog({
-    //       title: 'few likes',
-    //       author: 'J',
-    //       url: 'anothercypress.com',
-    //       likes: '1',
+        cy.createBlog({
+          title: 'few likes',
+          author: 'J',
+          url: 'anothercypress.com',
+          likes: '1',
 
-    //     })
+        })
 
-    //     cy.createBlog({
-    //       title: 'most likes',
-    //       author: 'J',
-    //       url: 'anothercypress.com',
-    //       likes: '5000',
+        cy.createBlog({
+          title: 'most likes',
+          author: 'J',
+          url: 'anothercypress.com',
+          likes: '5000',
 
-    //     })
+        })
 
-    //   })
-    //   it('blogs are ordered according to number of likes', function() {
-    //     cy
-    //     .get('div.blogEntry')
-    //     .then(blogs => {
-    //       blogs.map(blog=>{
-    //         return console.log("blog: ", blog)
-    //       })
-    //     })
-    //   })
+      })
+      it('blogs are ordered according to number of likes', function() {
+        cy
+        .get('div.blogEntry')
+        .then(blogs => {
+          cy.wrap(blogs[0]).contains('5000')
+          cy.wrap(blogs[1]).contains('50')
+          cy.wrap(blogs[2]).contains('1')
+        })
+      })
 
     })
 
