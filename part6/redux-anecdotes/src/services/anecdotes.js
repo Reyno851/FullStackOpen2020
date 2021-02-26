@@ -7,18 +7,31 @@ const getAll = async () => {
   return response.data
 }
 
-const createNew = async (anecdoteObject) => {
-  const response = await axios.post(baseUrl, anecdoteObject)
+const getId = () => (100000 * Math.random()).toFixed(0)
+
+const createNew = async (content) => {
+    const object = { 
+        content: content,
+        id: getId(),
+        votes: 0 
+    }
+    const response = await axios.post(baseUrl, object)
+    return response.data
+  }
+
+const addVote = async (id) => {
+  const allAnecdotes = await axios.get(baseUrl)
+  const anecdoteToVote = allAnecdotes.data.find(n => n.id == id.toString())
+  const votedAnecdote = {
+    ...anecdoteToVote,
+    votes: anecdoteToVote.votes + 1
+  }
+  const response = await axios.put(`${baseUrl}/${id}`, votedAnecdote)
   return response.data
 }
-
-const addVote = async (anecdoteObject) => {
-  const response = await axios.put(baseUrl + `${anecdoteObject.id}`, anecdoteObject)
-  return response.data
-}
-
+  
 export default { 
-  getAll,
-  createNew,
-  addVote
-}
+    getAll,
+    createNew,
+    addVote
+ }

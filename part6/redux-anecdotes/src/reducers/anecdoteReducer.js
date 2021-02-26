@@ -1,3 +1,4 @@
+import anecdotes from '../services/anecdotes'
 import anecdoteService from '../services/anecdotes'
 
 const anecdotesAtStart = [
@@ -19,8 +20,7 @@ const asObject = (anecdote) => {
   }
 }
 
-var initialState = anecdotesAtStart.map(asObject)
-
+const initialState = anecdotesAtStart.map(asObject)
 
 const anecdoteReducer = (state = [], action) => {
   console.log('state now: ', state)
@@ -28,60 +28,30 @@ const anecdoteReducer = (state = [], action) => {
 
   switch (action.type) {
 
-    case 'ADD_VOTE': 
-      const id = action.data.id
-      const anecdoteToChange = state.find(n => n.id === id)
-      const changedAnecdote = { 
-        ...anecdoteToChange, 
-        votes: anecdoteToChange.votes + 1 
-      }
-      return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : changedAnecdote
-      )
-
-    case 'NEW_ANECDOTE':
-      return state.concat(action.data)  
-
     case 'INIT_ANECDOTES':
       return action.data
 
-    default: 
-      return state
+    case 'ADD_VOTE':
+      const id = action.data.id
+      const anecdoteToVote = state.find(a => a.id == id)
+      const votedAnecdote = {
+        ...anecdoteToVote,
+        votes: anecdoteToVote.votes + 1
+      }
+      var newState = state.map(anecdote => 
+        anecdote.id != id ? anecdote : votedAnecdote
+      )
+      return newState
+    
+    case 'CREATE_ANECDOTE':
+      const newAnecdote = action.data
+      var newState = state.concat(newAnecdote)
+      return newState
+
+    default: return state
   }
-  
+
 }
-
-export const incrementVote = (anecdote) => {
-
-  const id = anecdote.id
-
-  return async dispatch => {
-    // const anecdoteToChange = await anecdoteService.addVote(id)
-    dispatch({
-      type: 'ADD_VOTE',
-      data: { id }
-    })
-  }
-}
-
-
-export const createAnecdote = data => {
-  return async dispatch => {
-    const newAnecdote = await anecdoteService.createNew(data)
-    dispatch({
-      type: 'NEW_ANECDOTE',
-      data: newAnecdote
-      // { 
-      //   content,
-      //   id: getId(),
-      //   votes: 0
-      // } 
-      // No need to define id and votes here since backend generates ids for the anecdotes
-    })
-  }
-}
-
-
 
 export const initializeAnecdotes = () => {
   return async dispatch => {
@@ -89,6 +59,27 @@ export const initializeAnecdotes = () => {
     dispatch({
       type: 'INIT_ANECDOTES',
       data: anecdotes,
+    })
+  }
+}
+
+
+export const addVote = (id) => {
+  return async dispatch => {
+    const votedAnecdote = await anecdoteService.addVote(id) // .addVote() handles the backend adding of votes
+    dispatch({ // dispatch handles the front end handling of votes
+      type: 'ADD_VOTE',
+      data: votedAnecdote
+    })
+  }
+}
+
+export const createAnecdote = (content) => {
+  return async dispatch => {
+    const newAnecdote = await anecdoteService.createNew(content)
+    dispatch({
+      type: 'CREATE_ANECDOTE',
+      data: newAnecdote
     })
   }
 }

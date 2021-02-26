@@ -1,37 +1,38 @@
-const notificationAtStart = [
-    'This is the initial notification'
-]
+const initialNotification = 'This is the origin notification'
 
-const notificationReducer = (state = notificationAtStart, action) => {
+const notificationReducer = (state = initialNotification, action) => {
+    console.log('state now: ', state)
+    console.log('action', action)
+  
     switch (action.type) {
   
-      case 'SHOW_NOTIF': 
-        return action.notification
-  
-      default: 
-        return state
+      case 'SHOW_NOTIF':
+        const newNotificationState = action.data
+        return newNotificationState
+
+      case 'CLEAR_NOTIF':
+        return ''  
+
+      default: return state
     }
-    
 }
 
-export const notificationChange = notification => {
+let timeoutId // Referenced from solution
+
+export const setNotification = (content, timeout) => {
   return async dispatch => {
-    
     dispatch({
       type: 'SHOW_NOTIF',
-      notification
+      data: content,
     })
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(() => {
+      dispatch({ type: 'CLEAR_NOTIF' })
+    }, timeout*1000)
   }
 }
 
-// export const createAnecdote = data => {
-//   return async dispatch => {
-//     const newAnecdote = await anecdoteService.createNew(data)
-//     dispatch({
-//       type: 'NEW_ANECDOTE',
-//       data: newAnecdote
-//     })
-//   }
-// }
 
 export default notificationReducer

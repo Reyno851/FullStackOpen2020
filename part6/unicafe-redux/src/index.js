@@ -6,25 +6,25 @@ import reducer from './reducer'
 const store = createStore(reducer)
 
 const App = () => {
-  const incrementGood = () => {
+  const good = () => {
     store.dispatch({
       type: 'GOOD'
     })
   }
 
-  const incrementOk = () => {
+  const ok = () => {
     store.dispatch({
       type: 'OK'
     })
   }
 
-  const incrementBad = () => {
+  const bad = () => {
     store.dispatch({
       type: 'BAD'
     })
   }
 
-  const resetStats = () => {
+  const reset = () => {
     store.dispatch({
       type: 'ZERO'
     })
@@ -32,10 +32,10 @@ const App = () => {
 
   return (
     <div>
-      <button onClick={incrementGood}>good</button> 
-      <button onClick={incrementOk}>neutral</button> 
-      <button onClick={incrementBad}>bad</button>
-      <button onClick={resetStats}>reset stats</button>
+      <button onClick={good}>good</button> 
+      <button onClick={ok}>neutral</button> 
+      <button onClick={bad}>bad</button>
+      <button onClick={reset}>reset stats</button>
       <div>good {store.getState().good}</div>
       <div>neutral {store.getState().ok}</div>
       <div>bad {store.getState().bad}</div>
