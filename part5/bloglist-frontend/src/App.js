@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import './index.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -6,20 +7,23 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { errorStateChange } from './reducers/errorReducer'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [message, setMessage] = useState(null)
-  const [errorState, setErrorState] = useState(false)
+  const dispatch = useDispatch()
+  const blogs = useSelector(state => state.blogs)
+  const errorState = useSelector(state => state.errorState)
+  const notification = useSelector(state => state.notification)
+  // const [message, setMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+    dispatch(initializeBlogs()) 
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -46,11 +50,14 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorState(true)
-      setMessage('Wrong credentials')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      dispatch(errorStateChange(true))
+      dispatch(
+        setNotification('Wrong credentials'), 5
+      )
+      // setMessage('Wrong credentials')
+      // setTimeout(() => {
+      //   setMessage(null)
+      // }, 5000)
     }
   }
 
@@ -61,26 +68,23 @@ const App = () => {
 
 
   const addBlog = (blogObject) => {  
-
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => { // Use .then(). async/await somehow does not work to refresh blogs on browser automatically after addiiton
-        setBlogs(blogs.concat(returnedBlog))
-        setErrorState(false)
-        setMessage(
-          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-        )
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-      })
-      // .catch(error => {
-      //   setErrorState(true)
-      //   setMessage(`${error}`)
-      //   setTimeout(()=>{
-      //     setMessage(null)
-      //   }, 5000)
-      // })
+    dispatch(createBlog(blogObject))
+    dispatch(errorStateChange(false))
+    dispatch(
+      setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, 5)
+    )
+    // blogService
+    //   .create(blogObject)
+    //   .then(returnedBlog => { // Use .then(). async/await somehow does not work to refresh blogs on browser automatically after addiiton
+    //     setBlogs(blogs.concat(returnedBlog))
+    //     setErrorState(false)
+    //     setMessage(
+    //       `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+    //     )
+    //     setTimeout(() => {
+    //       setMessage(null)
+    //     }, 5000)
+    //   })
     
   }
 
@@ -91,7 +95,7 @@ const App = () => {
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
-      <Notification errorState={errorState} message={message}/>
+      <Notification errorState={errorState} notification={notification}/>
       <div>
         username
         <input
@@ -118,45 +122,46 @@ const App = () => {
 
   const blogForm = () => (
     <div>
-      <h2>blogs</h2>
 
-      <Notification errorState={errorState} message={message}/>
+      <Notification errorState={errorState} notification={notification}/>
 
       <p> {user.name} logged in </p>
       <button onClick={handleLogout}>logout</button>
-    
-      <h2> create new </h2>
-      <Togglable buttonLabel='new blog'>
-        <BlogForm 
-          createBlog={addBlog}
-          user={user}
-        />
-      </Togglable>
+      
 
-      {
-        blogs
-          .sort((a,b) => {
-            return b.likes - a.likes // Sort blogs according to number of likes in descending order
-          })
-          .map(blog => {
-          // console.log('loggedinuser: ', user, 'blog', blog )
-            return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} setBlogs={setBlogs} addLikeForTesting={addLikeForTesting}/>
-          }
-          
-          )
-      }
+      <h2> blog app </h2>
+        <Togglable buttonLabel='create new'>
+          <BlogForm 
+            createBlog={addBlog}
+            user={user}
+          />
+        </Togglable>
+
+        {
+          blogs
+            .sort((a,b) => {
+              return b.likes - a.likes // Sort blogs according to number of likes in descending order
+            })
+            .map(blog => {
+            // console.log('loggedinuser: ', user, 'blog', blog )
+              return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /* setBlogs={setBlogs} */ addLikeForTesting={addLikeForTesting}/>
+            }
+            
+            )
+        }
+
 
     </div>
   )
 
 
   return (
-    <div>
-      {user === null && loginForm()}
-      {user !== null && blogForm()}
+    
+      <div>
+        {user === null && loginForm()}
+        {user !== null && blogForm()}
+      </div>
 
-
-    </div>
   )
 }
 
