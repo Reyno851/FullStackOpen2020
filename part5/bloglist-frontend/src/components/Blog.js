@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import blogService from '../services/blogs'
+import { useSelector, useDispatch } from 'react-redux'
+import { addLike, removeBlog } from '../reducers/blogReducer'
 
 const Blog = ({ blog, loggedInUser, allBlogs, setBlogs, addLikeForTesting }) => {
+  const dispatch = useDispatch()
   const [detailsVisible, setDetailsVisible] = useState(false)
 
-  //console.log(loggedInUser.id, blog.user)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -17,28 +18,30 @@ const Blog = ({ blog, loggedInUser, allBlogs, setBlogs, addLikeForTesting }) => 
     setDetailsVisible(!detailsVisible)
   }
 
-  const addLike = () => {
+  const increaseLike = () => {
     addLikeForTesting()
-    const blogWithAddedLikes = { ...blog, likes: blog.likes + 1 } // Use dot operator to create exact same blog, but only change the likes key
+    dispatch(addLike(blog))
+    // const blogWithAddedLikes = { ...blog, likes: blog.likes + 1 } // Use dot operator to create exact same blog, but only change the likes key
     
-    blogService
-      .update(blog.id, blogWithAddedLikes)
-      .then(response => { // Backend responds with the updated blog
-        console.log('response: ', response)
-        // ID of blog with updated likes is different from original. Therefore, we can replace the updated blog using ID
-        setBlogs(allBlogs.map(blog => blog.id !== response.id ? blog : response)) 
-      })
+    // blogService
+    //   .update(blog.id, blogWithAddedLikes)
+    //   .then(response => { // Backend responds with the updated blog
+    //     console.log('response: ', response)
+    //     // ID of blog with updated likes is different from original. Therefore, we can replace the updated blog using ID
+    //     setBlogs(allBlogs.map(blog => blog.id !== response.id ? blog : response)) 
+    //   })
   }
 
-  const removeBlog = () => { // 'blog' in this function refers to the 'blog' prop received
+  const deleteBlog = () => { // 'blog' in this function refers to the 'blog' prop received
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) { 
-      blogService
-        .remove(blog.id)
-        .then(
-          setBlogs(
-            allBlogs.filter(b => b.id !== blog.id) // b refers to the blogs which we are mapping from the current allBlogs list
-          )
-        )
+      dispatch(removeBlog(blog.id))
+      // blogService
+      //   .remove(blog.id)
+      //   .then(
+      //     setBlogs(
+      //       allBlogs.filter(b => b.id !== blog.id) // b refers to the blogs which we are mapping from the current allBlogs list
+      //     )
+      //   )
     }  
   }
 
@@ -54,11 +57,11 @@ const Blog = ({ blog, loggedInUser, allBlogs, setBlogs, addLikeForTesting }) => 
         {blog.url}
         <br/>
         <span id='likes'> {blog.likes} </span>
-        <button onClick={addLike}>like</button>
+        <button onClick={increaseLike}>like</button>
         <br/>
         {blog.user.name}
         <br/>
-        <button id='removeButton' style={{ display: loggedInUser.id === blog.user.id ? '' : 'none' }} onClick={removeBlog}> remove </button>
+        <button id='removeButton' style={{ display: loggedInUser.id === blog.user.id ? '' : 'none' }} onClick={deleteBlog}> remove </button>
       </div>
 
       

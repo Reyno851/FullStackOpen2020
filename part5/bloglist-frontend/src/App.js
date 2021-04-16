@@ -16,7 +16,6 @@ const App = () => {
   const blogs = useSelector(state => state.blogs)
   const errorState = useSelector(state => state.errorState)
   const notification = useSelector(state => state.notification)
-  // const [message, setMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
