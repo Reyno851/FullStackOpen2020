@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch, useStore } from 'react-redux'
 import './index.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -7,28 +7,32 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
-import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, clearBlogsFromRedux } from './reducers/blogReducer'
 import { errorStateChange } from './reducers/errorReducer'
 import { setNotification } from './reducers/notificationReducer'
+import { setUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
   const errorState = useSelector(state => state.errorState)
   const notification = useSelector(state => state.notification)
+  const user = useSelector(state => state.user)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('') 
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
-    dispatch(initializeBlogs()) 
-  }, [dispatch])
+    if (user) { // Make it such that blogs are only initialised if there is a change in user, ie a user is logged in
+      dispatch(initializeBlogs()) 
+    }
+  }, [user]) // Don't forget to add the variable as a 2nd argument of useEffect
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
+      // setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
@@ -38,14 +42,15 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password,
+        username, password
       })
       blogService.setToken(user.token) // Need to set token when logging in, or else creating blogs would be unauthorised
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
-        
-      setUser(user)
+      
+      dispatch(setUser(user))
+      //setUser(user)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -61,8 +66,10 @@ const App = () => {
   }
 
   const handleLogout = () => {
+    dispatch(setUser(null))
+    dispatch(clearBlogsFromRedux())
     window.localStorage.removeItem('loggedBlogappUser')
-    window.location.reload() // Refresh page programmatically after logging out
+    // window.location.reload() // Manual reloading is not needed since user set to null and {user === null && loginForm()} condition is rendered 
   }
 
 

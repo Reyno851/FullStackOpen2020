@@ -7,6 +7,9 @@ export const blogReducer = (state = [], action) => {
         case 'INIT_BLOGS':
             return action.data
 
+        case 'CLEAR_BLOGS':
+            return []
+
         case 'NEW_BLOG':
             return [...state, action.data]
 
@@ -25,7 +28,7 @@ export const blogReducer = (state = [], action) => {
         case 'DELETE_BLOG':
             newState = state.filter(b => b.id !== action.id)
             return newState
-
+        
         default:
             return state
 
@@ -38,6 +41,14 @@ export const initializeBlogs = () => {
         dispatch({
             type: 'INIT_BLOGS',
             data: blogs,
+        })
+    }
+}
+
+export const clearBlogsFromRedux = () => { // Action creator used to clear blogs from redux state after user logs out
+    return dispatch => {
+        dispatch({
+            type: 'CLEAR_BLOGS'
         })
     }
 }
