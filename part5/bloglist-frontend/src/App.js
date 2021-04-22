@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch, useStore } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  BrowserRouter as Router,
+  Switch, Route, Link
+} from "react-router-dom"
 import './index.css'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -11,6 +15,7 @@ import { initializeBlogs, createBlog, clearBlogsFromRedux } from './reducers/blo
 import { errorStateChange } from './reducers/errorReducer'
 import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
+import UserBasicInfo from './components/UserBasicInfo'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -23,19 +28,19 @@ const App = () => {
 
   useEffect(() => {
     if (user) { // Make it such that blogs are only initialised if there is a change in user, ie a user is logged in
-      dispatch(initializeBlogs()) 
+      dispatch(initializeBlogs())
     }
   }, [user]) // Don't forget to add the variable as a 2nd argument of useEffect
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      dispatch(setUser(user))
+      const parsedUser = JSON.parse(loggedUserJSON)
+      dispatch(setUser(parsedUser))
       // setUser(user)
-      blogService.setToken(user.token)
+      blogService.setToken(parsedUser.token)
     }
-  }, [])
+  }, [dispatch])
 
 
   const handleLogin = async (event) => {
@@ -131,30 +136,42 @@ const App = () => {
 
       <Notification errorState={errorState} notification={notification}/>
 
+      <Link style={{padding : 5}} to="/">blogs</Link>
+      <Link style={{padding : 5}} to="/users">users</Link>
       <p> {user.name} logged in </p>
       <button onClick={handleLogout}>logout</button>
       
+      <Switch>
 
-      <h2> blog app </h2>
-        <Togglable buttonLabel='create new'>
-          <BlogForm 
-            createBlog={addBlog}
-            user={user}
-          />
-        </Togglable>
+        <Route path="/users">
+          <UserBasicInfo/>
+        </Route>
 
-        {
-          blogs
-            .sort((a,b) => {
-              return b.likes - a.likes // Sort blogs according to number of likes in descending order
-            })
-            .map(blog => {
-            // console.log('loggedinuser: ', user, 'blog', blog )
-              return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /* setBlogs={setBlogs} */ addLikeForTesting={addLikeForTesting}/>
+        <Route path="/">
+          <h2> blog app </h2>
+            <Togglable buttonLabel='create new'>
+              <BlogForm 
+                createBlog={addBlog}
+                user={user}
+              />
+            </Togglable>
+
+            {
+              blogs
+                .sort((a,b) => {
+                  return b.likes - a.likes // Sort blogs according to number of likes in descending order
+                })
+                .map(blog => {
+                // console.log('loggedinuser: ', user, 'blog', blog )
+                  return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /* setBlogs={setBlogs} */ addLikeForTesting={addLikeForTesting}/>
+                }
+                
+                )
             }
-            
-            )
-        }
+        </Route>
+
+      </Switch>
+      
 
 
     </div>
@@ -162,11 +179,14 @@ const App = () => {
 
 
   return (
-    
-      <div>
-        {user === null && loginForm()}
-        {user !== null && blogForm()}
-      </div>
+      <Router>
+
+        <div>
+          {user === null && loginForm()}
+          {user !== null && blogForm()}
+        </div>
+
+      </Router>
 
   )
 }
