@@ -9,12 +9,14 @@ import { blogReducer } from './reducers/blogReducer'
 import { errorReducer } from './reducers/errorReducer'
 import { notificationReducer } from './reducers/notificationReducer'
 import { userReducer } from './reducers/userReducer'
+import { userBasicInfoReducer } from './reducers/userBasicInfoReducer'
 
 const reducer = combineReducers({
     blogs: blogReducer,
     errorState: errorReducer,
     notification: notificationReducer,
-    user: userReducer
+    user: userReducer,
+    userBasicInfo: userBasicInfoReducer
   })
 
 const store = createStore(

@@ -15,7 +15,9 @@ import { initializeBlogs, createBlog, clearBlogsFromRedux } from './reducers/blo
 import { errorStateChange } from './reducers/errorReducer'
 import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
+import { initializeUsers } from './reducers/userBasicInfoReducer'
 import UserBasicInfo from './components/UserBasicInfo'
+import UserIndividualView from './components/UserIndividualView'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -27,8 +29,9 @@ const App = () => {
   const [password, setPassword] = useState('') 
 
   useEffect(() => {
-    if (user) { // Make it such that blogs are only initialised if there is a change in user, ie a user is logged in
+    if (user){ // Make it such that blogs are only initialised if there is a change in user, ie a user is logged in
       dispatch(initializeBlogs())
+      dispatch(initializeUsers())
     }
   }, [user]) // Don't forget to add the variable as a 2nd argument of useEffect
 
@@ -143,8 +146,12 @@ const App = () => {
       
       <Switch>
 
+        <Route path="/users/:id">
+          <UserIndividualView> </UserIndividualView>
+        </Route>
+
         <Route path="/users">
-          <UserBasicInfo/>
+          <UserBasicInfo />
         </Route>
 
         <Route path="/">

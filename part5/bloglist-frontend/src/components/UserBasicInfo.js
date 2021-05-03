@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import userService from '../services/users'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { Link } from "react-router-dom"
 
 const UserBasicInfo = () => {  
-    const [userBasicInfo, setuserBasicInfo] = useState([])
-    useEffect(() => {
-        userService
-        .getAll()
-        .then(response => 
-            setuserBasicInfo(response)
-        )
-    }, [])
+    const userBasicInfo = useSelector(state => state.userBasicInfo)
+
+    if (!userBasicInfo) { // Use conditional rendering here to prevent page from rendering before userBasicInfo is loaded into redux state
+        return null
+    }
 
     return (
         <div>
@@ -24,7 +22,7 @@ const UserBasicInfo = () => {
                     userBasicInfo.map(user => {
                         return(
                             <tr key={user.id}>
-                                <td> {user.name} </td>
+                                <td>  <Link to={`/users/${user.id}`}> {user.name} </Link> </td>
                                 <td> {user.blogs.length} </td>
                             </tr>
                         )
