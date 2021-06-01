@@ -1,5 +1,8 @@
 #GET http://localhost:3001/api/users
 
+#DELETE http://localhost:3001/api/blogs/6094ca57f2bdae1a7452904b
+#Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjVlZTdiMDFkMDViZWFkNDYyNGRmZmY0NCIsImlhdCI6MTU5MjMyNTk5NX0.kXZNo93tmPd9Zo7DP6sw-KLzxbqd7Cdtyi3Ww2ho2t4
+
 # POST http://localhost:3001/api/blogs
 # Content-Type: application/json
 # Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjVlZTdiMDFkMDViZWFkNDYyNGRmZmY0NCIsImlhdCI6MTU5MjMyNTk5NX0.kXZNo93tmPd9Zo7DP6sw-KLzxbqd7Cdtyi3Ww2ho2t4
@@ -8,8 +11,7 @@
 #     "title": "Blog Post for Deletion",
 #     "author": "Reynold",
 #     "url": "website.com",
-#     "likes": 1344232,
-#     "userId": "5ee7b01d05bead4624dfff44"
+#     "likes": 1344232
 # }
 
 # POST http://localhost:3001/api/users
@@ -43,8 +45,7 @@
 
 
 
-DELETE http://localhost:3001/api/blogs/5ef83ede5a37e02dcc469ab3
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjVlZTdiMDFkMDViZWFkNDYyNGRmZmY0NCIsImlhdCI6MTU5MjMyNTk5NX0.kXZNo93tmPd9Zo7DP6sw-KLzxbqd7Cdtyi3Ww2ho2t4
+
 
 # POST http://localhost:3001/api/login
 # Content-Type: application/json
@@ -53,3 +54,12 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 #     "username": "test",
 #     "password": "svanhagen"
 # }
+
+POST http://localhost:3001/api/blogs/607a93e8976a02358820923e/comments
+Content-Type: application/json
+
+{ 
+    "comment": "Second comment"
+}
+
+#GET http://localhost:3001/api/users

@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
+const blog = require('../models/blog')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -8,6 +9,7 @@ const User = require('../models/user')
 // For eg, if /test is specified here as a route, the full route becomes
 // /api/blogs/test as /api/blogs is defined at line 25.
 blogsRouter.get('/', async (request, response) => {
+  console.log('getted')
   const blogs = await Blog
     .find({}).populate('user', {username: 1, name: 1})
   response.json(blogs.map((blog) => blog.toJSON())) // No error handling, all done behind the scene by the express-async-errors library
@@ -40,13 +42,13 @@ blogsRouter.post('/', async (request, response) => {
   }
   const user = await User.findById(decodedToken.id)
   // const user = await User.findById(body.userId)
-  
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user // ._id was removed
+    user: user, // ._id was removed
   })
 
   const savedBlog = await blog.save()
@@ -79,7 +81,6 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 blogsRouter.put('/:id', (request, response, next) => {
   const body = request.body
-  // console.log('THIS BODY: ', body)
   const blog = {
     title: body.title,
     author: body.author,
@@ -88,7 +89,6 @@ blogsRouter.put('/:id', (request, response, next) => {
     user: body.user.id
   }
 
-  console.log('ASDFJKASDF: ', blog)
   // const findedblog = await Blog.findById(request.params.id)
   // console.log('found : ', findedblog)
   Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
@@ -98,5 +98,26 @@ blogsRouter.put('/:id', (request, response, next) => {
     })
     .catch((error) => next(error))
 })
+
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  const body = request.body
+  if (!body) {
+    return response.status(400).json({ 
+      error: 'content missing' 
+    })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+  blog.comments.push(body.comment)
+  Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+    .then((updatedBlog) => {
+      console.log('updated: ', updatedBlog)
+      response.json(updatedBlog.toJSON())
+    })
+    .catch((error) => next(error))
+
+  // https://fullstackopen.com/en/part3/node_js_and_express - Receiving Data
+})
+
 
 module.exports = blogsRouter

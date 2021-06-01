@@ -18,6 +18,7 @@ import { setUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/userBasicInfoReducer'
 import UserBasicInfo from './components/UserBasicInfo'
 import UserIndividualView from './components/UserIndividualView'
+import BlogIndividualView from './components/BlogIndividualView'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -102,9 +103,6 @@ const App = () => {
     
   }
 
-  const addLikeForTesting = () => {
-    console.log('for testing')
-  }
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -146,8 +144,12 @@ const App = () => {
       
       <Switch>
 
+        <Route path="/blogs/:id">
+          <BlogIndividualView blogs={blogs}/>
+        </Route>
+
         <Route path="/users/:id">
-          <UserIndividualView> </UserIndividualView>
+          <UserIndividualView />
         </Route>
 
         <Route path="/users">
@@ -170,7 +172,7 @@ const App = () => {
                 })
                 .map(blog => {
                 // console.log('loggedinuser: ', user, 'blog', blog )
-                  return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /* setBlogs={setBlogs} */ addLikeForTesting={addLikeForTesting}/>
+                  return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /> /* setBlogs={setBlogs} */ 
                 }
                 
                 )

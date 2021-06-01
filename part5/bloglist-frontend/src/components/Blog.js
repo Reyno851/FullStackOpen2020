@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { addLike, removeBlog } from '../reducers/blogReducer'
+import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { removeBlog } from '../reducers/blogReducer'
 
-const Blog = ({ blog, loggedInUser, allBlogs, setBlogs, addLikeForTesting }) => {
+const Blog = ({ blog, loggedInUser, allBlogs, setBlogs }) => {
   const dispatch = useDispatch()
   const [detailsVisible, setDetailsVisible] = useState(false)
 
@@ -18,20 +19,6 @@ const Blog = ({ blog, loggedInUser, allBlogs, setBlogs, addLikeForTesting }) => 
     setDetailsVisible(!detailsVisible)
   }
 
-  const increaseLike = () => {
-    addLikeForTesting()
-    dispatch(addLike(blog))
-    // const blogWithAddedLikes = { ...blog, likes: blog.likes + 1 } // Use dot operator to create exact same blog, but only change the likes key
-    
-    // blogService
-    //   .update(blog.id, blogWithAddedLikes)
-    //   .then(response => { // Backend responds with the updated blog
-    //     console.log('response: ', response)
-    //     // ID of blog with updated likes is different from original. Therefore, we can replace the updated blog using ID
-    //     setBlogs(allBlogs.map(blog => blog.id !== response.id ? blog : response)) 
-    //   })
-  }
-
   const deleteBlog = () => { // 'blog' in this function refers to the 'blog' prop received
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) { 
       dispatch(removeBlog(blog.id))
@@ -44,22 +31,15 @@ const Blog = ({ blog, loggedInUser, allBlogs, setBlogs, addLikeForTesting }) => 
       //   )
     }  
   }
-
-
-  return (
+  return(
     <div className="blogEntry" style={blogStyle}>
       <div className="defaultView"> 
-        {blog.title} {blog.author}
+        <Link to={`/blogs/${blog.id}`}> {blog.title} {blog.author}  </Link>
         <button onClick={toggleView}> {detailsVisible ? 'hide' : 'view'} </button>
       </div>
       
       <div className="sectionDisplayedOnClick" style={{ display : detailsVisible ? '' : 'none' }}> 
-        {blog.url}
-        <br/>
-        <span id='likes'> {blog.likes} </span>
-        <button onClick={increaseLike}>like</button>
-        <br/>
-        {blog.user.name}
+        added by {blog.user.name}
         <br/>
         <button id='removeButton' style={{ display: loggedInUser.id === blog.user.id ? '' : 'none' }} onClick={deleteBlog}> remove </button>
       </div>

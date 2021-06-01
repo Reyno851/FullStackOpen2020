@@ -20,7 +20,7 @@ const UserIndividualView = () => {
                 {
                     user.blogs.map(blog => {
                         return (
-                            <li> {blog.title} </li>
+                            <li key={blog.id}> {blog.title} </li>
                         )
                     })
                 }

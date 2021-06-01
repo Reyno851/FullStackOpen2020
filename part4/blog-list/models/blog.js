@@ -14,7 +14,7 @@ const blogSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  likes:{
+  likes: {
     type: Number,
     default: 0
   },
@@ -24,6 +24,9 @@ const blogSchema = new mongoose.Schema({
     // Database does not actually know that the ids stored in the user field of blog
     // are referencing documents in the user collection
     // ref name is defined in mongoose.model() in the user schema js file 
+  },
+  comments: {
+    type: Array
   }
 })
 
