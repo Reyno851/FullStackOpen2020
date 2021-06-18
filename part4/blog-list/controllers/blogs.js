@@ -9,7 +9,6 @@ const User = require('../models/user')
 // For eg, if /test is specified here as a route, the full route becomes
 // /api/blogs/test as /api/blogs is defined at line 25.
 blogsRouter.get('/', async (request, response) => {
-  console.log('getted')
   const blogs = await Blog
     .find({}).populate('user', {username: 1, name: 1})
   response.json(blogs.map((blog) => blog.toJSON())) // No error handling, all done behind the scene by the express-async-errors library
@@ -100,7 +99,8 @@ blogsRouter.put('/:id', (request, response, next) => {
 })
 
 blogsRouter.post('/:id/comments', async (request, response, next) => {
-  const body = request.body
+  const body = request.body // Comment here is received as a json object
+  
   if (!body) {
     return response.status(400).json({ 
       error: 'content missing' 
@@ -111,7 +111,6 @@ blogsRouter.post('/:id/comments', async (request, response, next) => {
   blog.comments.push(body.comment)
   Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
     .then((updatedBlog) => {
-      console.log('updated: ', updatedBlog)
       response.json(updatedBlog.toJSON())
     })
     .catch((error) => next(error))

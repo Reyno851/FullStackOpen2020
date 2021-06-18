@@ -2,6 +2,7 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { addLike, removeBlog } from '../reducers/blogReducer'
+import CommentForm from './CommentForm'
 
 const BlogIndividualView = ({ blogs }) => {
     const id = useParams().id
@@ -27,6 +28,7 @@ const BlogIndividualView = ({ blogs }) => {
             added by {blog.user.name}
             <br/>
             <h3> comments </h3>
+            <CommentForm blog={blog}/>
             <ul>
                 {blog.comments.map((comment, index) => { // Use index as 2nd parameter so that there is a unique key for each comment
                     return <li key={index} > {comment} </li>

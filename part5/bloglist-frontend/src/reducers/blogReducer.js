@@ -1,3 +1,4 @@
+
 import blogService from '../services/blogs'
 
 export const blogReducer = (state = [], action) => {
@@ -27,6 +28,16 @@ export const blogReducer = (state = [], action) => {
             
         case 'DELETE_BLOG':
             newState = state.filter(b => b.id !== action.id)
+            return newState
+
+        case 'ADD_COMMENT': // Update the front end
+            const blogID = action.data.commentedBlog.id
+            const blogToComment = state.find(b => b.id == blogID)
+            blogToComment.comments.push(action.data.comment)
+            var newState = state.map(blog => 
+              blog.id != blogID ? blog : blogToComment
+            )
+            console.log("newState: ", newState)
             return newState
         
         default:
@@ -80,6 +91,19 @@ export const removeBlog = (id) => {
         dispatch({
             type: 'DELETE_BLOG',
             id
+        })
+    }
+}
+
+export const addComment = (blog, comment) => {
+    return async dispatch => {
+        // Comment received is set to be received as a json object
+        // If a pure string is passed in, request body will somehow be empty
+        const newCommentObject = { comment: comment } 
+        const commentedBlog = await blogService.createComment(blog.id, newCommentObject) // Update the backend
+        dispatch({
+            type: 'ADD_COMMENT',
+            data: {commentedBlog, comment}
         })
     }
 }
