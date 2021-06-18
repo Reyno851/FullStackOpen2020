@@ -5,6 +5,7 @@ import {
   Switch, Route, Link
 } from "react-router-dom"
 import './index.css'
+import { Table, Form, Button, Alert, Navbar, Nav } from 'react-bootstrap'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -28,6 +29,7 @@ const App = () => {
   const user = useSelector(state => state.user)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('') 
+  const [welcomeMessage, setWelcomeMessage] = useState(null)
 
   useEffect(() => {
     if (user){ // Make it such that blogs are only initialised if there is a change in user, ie a user is logged in
@@ -57,7 +59,12 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
-      
+      console.log(user.name)
+      setWelcomeMessage(`Welcome ${user.name}`)
+      setTimeout(() => {
+        setWelcomeMessage(null)
+      }, 10000)
+
       dispatch(setUser(user))
       //setUser(user)
       setUsername('')
@@ -105,31 +112,31 @@ const App = () => {
 
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <Form onSubmit={handleLogin}>
       <h2>log in to application</h2>
       <Notification errorState={errorState} notification={notification}/>
-      <div>
-        username
-        <input
+      <Form.Group>
+        <Form.Label> username: </Form.Label> 
+        <Form.Control 
           type="text"
           id='username'
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
         />
-      </div>
-      <div>
-        password
-        <input
+        <Form.Label> password: </Form.Label> 
+        <Form.Control 
           type="password"
           id='password'
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
-      </div>
-      <button id="login-button" type="submit">login</button>
-    </form>      
+        <Button variant="primary" type="submit">
+            login
+        </Button>
+      </Form.Group>
+    </Form>      
   )
 
   const blogForm = () => (
@@ -137,11 +144,34 @@ const App = () => {
 
       <Notification errorState={errorState} notification={notification}/>
 
-      <Link style={{padding : 5}} to="/">blogs</Link>
-      <Link style={{padding : 5}} to="/users">users</Link>
-      <p> {user.name} logged in </p>
-      <button onClick={handleLogout}>logout</button>
+      {/* <Link style={{padding : 5}} to="/">Blogs</Link>
+      <Link style={{padding : 5}} to="/users">Users</Link>
+      <p> {user.name} logged in </p> */}
       
+      
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link href="#" as="span">
+              <Link style={{padding : 5}} to="/">Blogs</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={{padding : 5}} to="/users">Users</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              {user
+                ? <em style={{padding : 5}} >{user.name} logged in</em>
+                : <Link style={{padding : 5}} to="/login">login</Link>
+              }
+          </Nav.Link>
+          
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      
+      <button onClick={handleLogout}>Logout</button>
+
       <Switch>
 
         <Route path="/blogs/:id">
@@ -157,26 +187,30 @@ const App = () => {
         </Route>
 
         <Route path="/">
-          <h2> blog app </h2>
+          <h1> Blogs </h1>
             <Togglable buttonLabel='create new'>
               <BlogForm 
                 createBlog={addBlog}
                 user={user}
               />
             </Togglable>
-
-            {
-              blogs
-                .sort((a,b) => {
-                  return b.likes - a.likes // Sort blogs according to number of likes in descending order
-                })
-                .map(blog => {
-                // console.log('loggedinuser: ', user, 'blog', blog )
-                  return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /> /* setBlogs={setBlogs} */ 
+            <Table striped>
+              <tbody>
+                {
+                  blogs
+                    .sort((a,b) => {
+                      return b.likes - a.likes // Sort blogs according to number of likes in descending order
+                    })
+                    .map(blog => {
+                    // console.log('loggedinuser: ', user, 'blog', blog )
+                      return <Blog key={blog.id} blog={blog} loggedInUser={user} allBlogs={blogs} /> /* setBlogs={setBlogs} */ 
+                    }
+                    
+                    )
                 }
-                
-                )
-            }
+              </tbody>
+            </Table>
+            
         </Route>
 
       </Switch>
@@ -190,7 +224,12 @@ const App = () => {
   return (
       <Router>
 
-        <div>
+        <div className="container">
+            {(welcomeMessage &&
+              <Alert variant="success">
+                {welcomeMessage}
+              </Alert>
+            )}
           {user === null && loginForm()}
           {user !== null && blogForm()}
         </div>
