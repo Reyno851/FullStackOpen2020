@@ -72,7 +72,7 @@ const App = () => {
     } catch (exception) {
       dispatch(errorStateChange(true))
       dispatch(
-        setNotification('Wrong credentials'), 5
+        setNotification('Wrong credentials', 5)
       )
       // setMessage('Wrong credentials')
       // setTimeout(() => {

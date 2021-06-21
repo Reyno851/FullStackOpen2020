@@ -23,7 +23,7 @@ const BlogForm = ({ createBlog, user }) => {
 
   const addBlog = (event) => {
     event.preventDefault()
-    createBlog({
+    createBlog({ // Future work: create notification when any one field is missing
       title: title,
       author: author,
       url: url,
