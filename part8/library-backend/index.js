@@ -97,10 +97,18 @@ const typeDefs = gql`
     genres: [String!]!
   }
 
+  type Author {
+    name: String!
+    id: ID!
+    born: Int
+    bookCount: Int!
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks: [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
+    allAuthors: [Author!]!
   }
 `
 
@@ -108,7 +116,24 @@ const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: () => books
+    allBooks: (root, args) => {
+      if (!args.author && !args.genre) { // If no author or genre arguments, return all books
+        return books
+      } else if (args.author && !args.genre){ // If author argument only, return books filtered by author
+        return books.filter(b => b.author === args.author)
+      } else if (!args.author && args.genre){ // If genre argument only, return books filtered by genre
+        return books.filter(b => b.genres.includes(args.genre)) 
+      } else { // If both arguments, return books filtered by both
+        return books.filter(b => b.author === args.author).filter(b => b.genres.includes(args.genre))
+      }
+    },
+    allAuthors: () => authors
+  },
+  Author: {
+    name: (root) => root.name, // Default resolver. Not required to be defined
+    id: (root) => root.id, // Default resolver. Not required to be defined
+    born: (root) => root.born, // Default resolver. Not required to be defined
+    bookCount: (root) => books.filter(b => b.author === root.name).length // Extra custom field created for bookCount
   }
 }
 
