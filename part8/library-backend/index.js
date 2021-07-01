@@ -110,6 +110,21 @@ const typeDefs = gql`
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
+
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book
+
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
+  }
+
 `
 
 const resolvers = {
@@ -134,6 +149,34 @@ const resolvers = {
     id: (root) => root.id, // Default resolver. Not required to be defined
     born: (root) => root.born, // Default resolver. Not required to be defined
     bookCount: (root) => books.filter(b => b.author === root.name).length // Extra custom field created for bookCount
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      const book = {...args}
+      books = books.concat(book)
+
+      if (!authors.some(a => a.name === args.author)) { // Check if author in new book entry is already in list of authors
+        const author = { // If author is new, add author to list of author objects
+          name: args.author,
+          bookCount: books.filter(b => b.author === args.author).length
+          // No need to set 'born' field here as it is set as nullable in Author schema
+        }
+        authors = authors.concat(author)
+      } // If author is not new, do not add author again to list of author objects
+
+      return book // Return book object if addition of book is successful
+    },
+
+    editAuthor: (root, args) => {
+      const author = authors.find(a => a.name === args.name) // Find given author in list of author objects
+      if (!author) { // If author does not exist, return null
+        return null
+      }
+  
+      const updatedAuthor = { ...author, born: args.setBornTo } // If author exists, set 'born' field to year set in argument
+      authors = authors.map(a => a.name === args.name ? updatedAuthor : a) // Use map to update authors list
+      return updatedAuthor
+    }   
   }
 }
 
